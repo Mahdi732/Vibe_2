@@ -1,6 +1,8 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\UserController;
+use App\Models\User;
 
 Route::get('/', function () {
     return view('welcome');
@@ -16,6 +18,8 @@ Route::middleware([
     })->name('dashboard');
 });
 
-Route::get('friendRequest', function () {
-    return view('friendRequest');
-});
+Route::get('/post', function () {
+    return view('Post');
+})->name('Post');
+
+Route::get('/friendRequest', [UserController::class, 'search'])->name('friend');
