@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Friend Requests</title>
   <script src="https://unpkg.com/@tailwindcss/browser@4"></script>
+  <script src="https://unpkg.com/htmx.org@2.0.4"></script>
   <style>
     .request-card {
       transition: all 0.3s ease;
@@ -28,117 +29,74 @@
   </style>
 </head>
 <body class="bg-gray-100 min-h-screen">
-  <div class="container mx-auto px-4 py-8">
-    <!-- Header -->
-    <div class="flex justify-between items-center mb-8">
-      <h1 class="text-3xl font-bold text-indigo-700">Friend Requests</h1>
-      <div class="relative">
-        <span class="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">3</span>
-        <button class="bg-white p-2 rounded-lg shadow">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
-          </svg>
+  <x-app-layout>
+    <div class="container mx-auto px-4 py-8">
+      <!-- Header -->
+      <div class="flex justify-between items-center mb-8">
+        <h1 class="text-3xl font-bold text-indigo-700">Friend Requests</h1>
+        <div class="relative">
+          <span class="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">3</span>
+          <button class="bg-white p-2 rounded-lg shadow">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+            </svg>
+          </button>
+        </div>
+      </div>
+  
+      <!-- Filter Options -->
+      <div class="bg-white rounded-lg shadow-md p-4 mb-6">
+        <div class="flex flex-wrap items-center gap-4">
+          <span class="text-gray-700 font-medium">Filter by:</span>
+          <button class="bg-indigo-100 text-indigo-800 px-4 py-2 rounded-full text-sm font-medium">All Requests</button>
+          <button class="bg-gray-100 text-gray-800 px-4 py-2 rounded-full text-sm font-medium">Recent</button>
+          <button class="bg-gray-100 text-gray-800 px-4 py-2 rounded-full text-sm font-medium">Pending</button>
+        </div>
+      </div>
+      <form hx-get="{{ route('friend') }}"
+          hx-trigger="input changed delay:300ms"
+          hx-target="#parent"
+          hx-swap="outerHTML">
+        <input type="text" name="search" placeholder="find your friend" value="{{ request('search') }}">
+      </form>
+  
+      <!-- Friend Requests Section -->
+      <div id="parent" class=" grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <!-- Request Card 1 -->
+        @foreach ($users as $user)
+        <div class="request-card bg-white rounded-xl shadow-md overflow-hidden">
+          <div class="p-5">
+            <div class="flex items-center mb-4">
+              <img src="{{ $user->username }}" class="h-12 w-12 rounded-full object-cover" alt="User profile">
+              <div class="ml-4">
+                <h3 class="text-lg font-semibold text-gray-800">{{ $user->username }}</h3>
+                <p class="text-gray-600 text-sm">{{ $user->name }}</p>
+              </div>
+            </div>
+            <p class="text-gray-700 mb-4">Hey! I'd love to connect with you on this platform!</p>
+            <div class="flex space-x-3">
+              <button class="accept-btn flex-1 bg-indigo-600 hover:bg-indigo-700 text-white py-2 px-4 rounded-lg font-medium">
+                Accept
+              </button>
+              <button class="decline-btn flex-1 bg-gray-200 hover:bg-gray-300 text-gray-800 py-2 px-4 rounded-lg font-medium">
+                Decline
+              </button>
+            </div>
+          </div>
+          <div class="bg-gray-50 px-5 py-3 text-sm text-gray-600">
+            Sent 2 days ago
+          </div>
+        </div>
+        @endforeach
+  
+      <!-- See More Button -->
+      <div class="text-center mt-8">
+        <button class="bg-white text-indigo-700 font-medium px-6 py-3 rounded-lg shadow hover:shadow-lg transition-all duration-200">
+          Load More Requests
         </button>
       </div>
     </div>
-
-    <!-- Filter Options -->
-    <div class="bg-white rounded-lg shadow-md p-4 mb-6">
-      <div class="flex flex-wrap items-center gap-4">
-        <span class="text-gray-700 font-medium">Filter by:</span>
-        <button class="bg-indigo-100 text-indigo-800 px-4 py-2 rounded-full text-sm font-medium">All Requests</button>
-        <button class="bg-gray-100 text-gray-800 px-4 py-2 rounded-full text-sm font-medium">Recent</button>
-        <button class="bg-gray-100 text-gray-800 px-4 py-2 rounded-full text-sm font-medium">Pending</button>
-      </div>
-    </div>
-
-    <!-- Friend Requests Section -->
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-      <!-- Request Card 1 -->
-      <div class="request-card bg-white rounded-xl shadow-md overflow-hidden">
-        <div class="p-5">
-          <div class="flex items-center mb-4">
-            <img src="/api/placeholder/60/60" class="h-12 w-12 rounded-full object-cover" alt="User profile">
-            <div class="ml-4">
-              <h3 class="text-lg font-semibold text-gray-800">Alex Johnson</h3>
-              <p class="text-gray-600 text-sm">2 mutual friends</p>
-            </div>
-          </div>
-          <p class="text-gray-700 mb-4">Hey! I'd love to connect with you on this platform!</p>
-          <div class="flex space-x-3">
-            <button class="accept-btn flex-1 bg-indigo-600 hover:bg-indigo-700 text-white py-2 px-4 rounded-lg font-medium">
-              Accept
-            </button>
-            <button class="decline-btn flex-1 bg-gray-200 hover:bg-gray-300 text-gray-800 py-2 px-4 rounded-lg font-medium">
-              Decline
-            </button>
-          </div>
-        </div>
-        <div class="bg-gray-50 px-5 py-3 text-sm text-gray-600">
-          Sent 2 days ago
-        </div>
-      </div>
-
-      <!-- Request Card 2 -->
-      <div class="request-card bg-white rounded-xl shadow-md overflow-hidden">
-        <div class="p-5">
-          <div class="flex items-center mb-4">
-            <img src="/api/placeholder/60/60" class="h-12 w-12 rounded-full object-cover" alt="User profile">
-            <div class="ml-4">
-              <h3 class="text-lg font-semibold text-gray-800">Sarah Miller</h3>
-              <p class="text-gray-600 text-sm">5 mutual friends</p>
-            </div>
-          </div>
-          <p class="text-gray-700 mb-4">I saw your profile and wanted to connect! We share similar interests.</p>
-          <div class="flex space-x-3">
-            <button class="accept-btn flex-1 bg-indigo-600 hover:bg-indigo-700 text-white py-2 px-4 rounded-lg font-medium">
-              Accept
-            </button>
-            <button class="decline-btn flex-1 bg-gray-200 hover:bg-gray-300 text-gray-800 py-2 px-4 rounded-lg font-medium">
-              Decline
-            </button>
-          </div>
-        </div>
-        <div class="bg-gray-50 px-5 py-3 text-sm text-gray-600">
-          Sent 1 week ago
-        </div>
-      </div>
-
-      <!-- Request Card 3 -->
-      <div class="request-card bg-white rounded-xl shadow-md overflow-hidden">
-        <div class="p-5">
-          <div class="flex items-center mb-4">
-            <img src="/api/placeholder/60/60" class="h-12 w-12 rounded-full object-cover" alt="User profile">
-            <div class="ml-4">
-              <h3 class="text-lg font-semibold text-gray-800">Michael Chen</h3>
-              <p class="text-gray-600 text-sm">1 mutual friend</p>
-            </div>
-          </div>
-          <p class="text-gray-700 mb-4">We met at the tech conference last month. Would love to stay connected!</p>
-          <div class="flex space-x-3">
-            <button class="accept-btn flex-1 bg-indigo-600 hover:bg-indigo-700 text-white py-2 px-4 rounded-lg font-medium">
-              Accept
-            </button>
-            <button class="decline-btn flex-1 bg-gray-200 hover:bg-gray-300 text-gray-800 py-2 px-4 rounded-lg font-medium">
-              Decline
-            </button>
-          </div>
-        </div>
-        <div class="bg-gray-50 px-5 py-3 text-sm text-gray-600">
-          Sent 3 days ago
-        </div>
-      </div>
-
-    </div>
-
-    <!-- See More Button -->
-    <div class="text-center mt-8">
-      <button class="bg-white text-indigo-700 font-medium px-6 py-3 rounded-lg shadow hover:shadow-lg transition-all duration-200">
-        Load More Requests
-      </button>
-    </div>
-  </div>
-
+</x-app-layout>
   <script>
     // Simple interactive elements
     document.addEventListener('DOMContentLoaded', function() {
