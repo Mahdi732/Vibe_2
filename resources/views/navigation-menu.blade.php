@@ -18,8 +18,20 @@
                 </div>
 
                 <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
-                    <x-nav-link href="{{ route('friend') }}" :active="request()->routeIs('friendRequest')">
+                    <x-nav-link href="{{ route('friend.requests') }}" :active="request()->routeIs('friendRequest')">
                         {{ __('youRequest') }}
+                    </x-nav-link>
+                </div>
+
+                <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
+                    <x-nav-link href="{{ route('friends.list') }}" :active="request()->routeIs('friendRequest')">
+                        {{ __('Your friend') }}
+                    </x-nav-link>
+                </div>
+
+                <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
+                    <x-nav-link href="{{ route('posts.index') }}" :active="request()->routeIs('friendRequest')">
+                        {{ __('Post') }}
                     </x-nav-link>
                 </div>
 

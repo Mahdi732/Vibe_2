@@ -10,7 +10,7 @@ use Laravel\Fortify\TwoFactorAuthenticatable;
 use Laravel\Jetstream\HasProfilePhoto;
 use Laravel\Sanctum\HasApiTokens;
 
-class User extends Authenticatable implements MustVerifyEmail
+class User extends Authenticatable 
 {
     use HasApiTokens;
 
@@ -29,6 +29,7 @@ class User extends Authenticatable implements MustVerifyEmail
         'name',
         'email',
         'password',
+        'bio',
         'username',
         'friendship_status',
     ];
@@ -66,4 +67,18 @@ class User extends Authenticatable implements MustVerifyEmail
             'password' => 'hashed',
         ];
     }
+
+    public function posts()
+    {
+        return $this->hasMany(Post::class);
+    }
+
+    public function friends()
+{
+    $sentRequests = $this->belongsToMany(User::class, 'friend_requests', 'sender_id', 'receiver_id')
+                         ->wherePivot('status', 'accepted');
+    $receivedRequests = $this->belongsToMany(User::class, 'friend_requests', 'receiver_id', 'sender_id')
+                             ->wherePivot('status', 'accepted');
+    return $sentRequests->get()->merge($receivedRequests->get());
+}
 }

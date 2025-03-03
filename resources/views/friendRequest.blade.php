@@ -14,16 +14,10 @@
       transform: translateY(-5px);
       box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
     }
-    .accept-btn {
+    .accept-btn, .decline-btn {
       transition: all 0.2s ease;
     }
-    .accept-btn:hover {
-      transform: scale(1.05);
-    }
-    .decline-btn {
-      transition: all 0.2s ease;
-    }
-    .decline-btn:hover {
+    .accept-btn:hover, .decline-btn:hover {
       transform: scale(1.05);
     }
   </style>
@@ -43,62 +37,107 @@
           </button>
         </div>
       </div>
-  
-      <!-- Filter Options -->
-      <div class="bg-white rounded-lg shadow-md p-4 mb-6">
-        <div class="flex flex-wrap items-center gap-4">
-          <span class="text-gray-700 font-medium">Filter by:</span>
-          <button class="bg-indigo-100 text-indigo-800 px-4 py-2 rounded-full text-sm font-medium">All Requests</button>
-          <button class="bg-gray-100 text-gray-800 px-4 py-2 rounded-full text-sm font-medium">Recent</button>
-          <button class="bg-gray-100 text-gray-800 px-4 py-2 rounded-full text-sm font-medium">Pending</button>
+
+      <!-- Search Bar -->
+      <form 
+        hx-get="{{ route('users.search') }}" 
+        hx-trigger="keyup changed delay:300ms" 
+        hx-target="#parent"
+        hx-swap="innerHTML"
+        hx-indicator=".loading"
+        class="relative w-full mb-8 max-w-md mx-auto"
+      >
+      @csrf
+        <input
+          type="text"
+          name="search"
+          placeholder="Find your friend..."
+          value="{{ request('search') }}"
+          class="w-full px-4 py-2 pr-10 text-gray-700 bg-white border-2 border-gray-200 rounded-lg shadow-sm focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all duration-300"
+        />
+        <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+          <svg
+            class="w-5 h-5 text-gray-400"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+            ></path>
+          </svg>
         </div>
-      </div>
-      <form hx-get="{{ route('friend') }}"
-          hx-trigger="input changed delay:300ms"
-          hx-target="#parent"
-          hx-swap="outerHTML">
-        <input type="text" name="search" placeholder="find your friend" value="{{ request('search') }}">
+        <div class="loading absolute inset-y-0 right-0 flex items-center pr-3 hidden">
+          <svg
+            class="animate-spin h-5 w-5 text-indigo-500"
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+          >
+            <circle
+              class="opacity-25"
+              cx="12"
+              cy="12"
+              r="10"
+              stroke="currentColor"
+              stroke-width="4"
+            ></circle>
+            <path
+              class="opacity-75"
+              fill="currentColor"
+              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+            ></path>
+          </svg>
+        </div>
       </form>
-  
+
+      <!-- Research Section -->
+      <div id="parent" class=" rounded-lg  mb-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      </div>
+
       <!-- Friend Requests Section -->
-      <div id="parent" class=" grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        <!-- Request Card 1 -->
-        @foreach ($users as $user)
-        <div class="request-card bg-white rounded-xl shadow-md overflow-hidden">
-          <div class="p-5">
-            <div class="flex items-center mb-4">
-              <img src="{{ $user->username }}" class="h-12 w-12 rounded-full object-cover" alt="User profile">
-              <div class="ml-4">
-                <h3 class="text-lg font-semibold text-gray-800">{{ $user->username }}</h3>
-                <p class="text-gray-600 text-sm">{{ $user->name }}</p>
-              </div>
+      <p>Your friend Request</p>
+      <div  class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <!-- Example Friend Request Card -->
+    @if($receivedRequests->isEmpty())
+    <p>no request for you 👌👌👌.</p>
+    @else
+   <!-- For each friend request -->
+    @foreach($receivedRequests as $request)
+    <div id="friend-request-{{ $request->id }}" class="request-card bg-white rounded-lg shadow-md p-6">
+        <div class="flex items-center mb-4">
+            <img src="https://via.placeholder.com/40" alt="User" class="w-10 h-10 rounded-full mr-4">
+            <div>
+                <h3 class="text-lg font-semibold text-gray-800">{{ $request->sender->username }}</h3>
+                <p class="text-gray-600">{{ $request->sender->username }}</p>
             </div>
-            <p class="text-gray-700 mb-4">Hey! I'd love to connect with you on this platform!</p>
-            <div class="flex space-x-3">
-              <button class="accept-btn flex-1 bg-indigo-600 hover:bg-indigo-700 text-white py-2 px-4 rounded-lg font-medium">
-                Accept
-              </button>
-              <button class="decline-btn flex-1 bg-gray-200 hover:bg-gray-300 text-gray-800 py-2 px-4 rounded-lg font-medium">
-                Decline
-              </button>
-            </div>
-          </div>
-          <div class="bg-gray-50 px-5 py-3 text-sm text-gray-600">
-            Sent 2 days ago
-          </div>
         </div>
-        @endforeach
-  
-      <!-- See More Button -->
-      <div class="text-center mt-8">
-        <button class="bg-white text-indigo-700 font-medium px-6 py-3 rounded-lg shadow hover:shadow-lg transition-all duration-200">
-          Load More Requests
-        </button>
+        <div class="flex justify-between">
+
+            <form hx-post="{{ route('friend.accept', $request->id) }}" hx-target="#friend-request-{{ $request->id }}" hx-swap="outerHTML">
+              @csrf
+              <button type="submit" class="accept-btn bg-indigo-500 text-white px-4 py-2 rounded-lg">Accept</button>
+          </form>
+          <form hx-post="{{ route('friend.decline', $request->id) }}" hx-target="#friend-request-{{ $request->id }}" hx-swap="outerHTML">
+              @csrf
+              <button type="submit" class="decline-btn bg-gray-300 text-gray-700 px-4 py-2 rounded-lg">Decline</button>
+          </form>
+          
+        </div>
+    </div>
+    @endforeach
+
+@endif
+
+        <!-- Add more friend request cards here -->
       </div>
     </div>
-</x-app-layout>
-  <script>
-    // Simple interactive elements
+  </x-app-layout>
+  {{-- <script>
     document.addEventListener('DOMContentLoaded', function() {
       const acceptButtons = document.querySelectorAll('.accept-btn');
       const declineButtons = document.querySelectorAll('.decline-btn');
@@ -145,6 +184,6 @@
         });
       });
     });
-  </script>
+  </script> --}}
 </body>
 </html>
