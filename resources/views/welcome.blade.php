@@ -101,17 +101,7 @@
     </style>
 </head>
 <body>
-    <div class="container">
-        <header>
-            <div class="logo">MyWebsite</div>
-            <nav>
-                <a href="">Home</a>
-                <a href="post">post</a>
-                <a href="friend">friend</a>
-                <a href="friendRequest">request</a>
-            </nav>
-        </header>
-
+    <x-app-layout>
         <section class="hero">
             <h1>Welcome to MyWebsite</h1>
             <p>Your one-stop destination for amazing content, services, and more. Explore what we have to offer and join our community today!</p>
@@ -139,5 +129,6 @@
             &copy; 2023 MyWebsite. All rights reserved.
         </footer>
     </div>
+</x-app-layout>
 </body>
 </html>
