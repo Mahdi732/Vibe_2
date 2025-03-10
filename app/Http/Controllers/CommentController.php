@@ -14,7 +14,7 @@ class CommentController extends Controller
         $request->validate([
             'content' => 'required|string|max:1000',
         ]);
-
+    
         $post = Post::findOrFail($postId);
         $comment = new Comment();
         $comment->content = $request->content;
@@ -23,4 +23,5 @@ class CommentController extends Controller
         $comment->save();
         return view('partials.comments', ['post' => $post]);
     }
+    
 }
